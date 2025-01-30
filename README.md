@@ -37,7 +37,6 @@ By using Integrated Gradients, we aim to gain interpretability and transparency 
 
 The **Integrated Gradients** method is mathematically defined as:
 
-The Integrated Gradients method is mathematically defined as:
 ![{4C641701-2E56-4F9A-AC0B-AF43A81FD09B}](https://github.com/user-attachments/assets/2d3a0f2e-835f-43af-917e-5bf43318d243)
 
 Where:
