@@ -37,6 +37,7 @@ By using Integrated Gradients, we aim to gain interpretability and transparency 
 
 The **Integrated Gradients** method is mathematically defined as:
 
+The Integrated Gradients method is mathematically defined as:
 $$
 \text{IntegratedGrads}_i(x) := (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha \times (x - x'))}{\partial x_i} \, d\alpha
 $$
@@ -46,6 +47,8 @@ Where:
 - \( x'_i \) is the baseline or reference value for that feature.
 - \( F \) is the model function.
 - \( \alpha \) scales the input from the baseline to the actual input.
+
+
 
 The method uses a **straight-line path** from the baseline to the input. The core idea is to compute the gradient for all interpolated inputs and average them. This average gradient is then scaled from 0 to 1, showing the average contribution of each pixel or feature along the path from baseline to input.
 
