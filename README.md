@@ -41,6 +41,7 @@ The Integrated Gradients method is mathematically defined as:
 $$
 \text{IntegratedGrads}_i(x) := (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha \times (x - x'))}{\partial x_i} \, d\alpha
 $$
+![{4C641701-2E56-4F9A-AC0B-AF43A81FD09B}](https://github.com/user-attachments/assets/2d3a0f2e-835f-43af-917e-5bf43318d243)
 
 Where:
 - \( x_i \) is the original input feature.
