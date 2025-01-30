@@ -4,7 +4,7 @@ This repository includes a **diverse dataset** of images and text, enabling the 
 
 ---
 
-### Paper-Work2: Integrated Gradients on Text and Image Data
+### Paper-Work2: Axiomatic Attribution for Deep Networks
 
 This repository also includes the implementation of **Integrated Gradients** applied to both **text** and **image** data.
 
@@ -14,55 +14,75 @@ This repository also includes the implementation of **Integrated Gradients** app
 
 By using Integrated Gradients, we aim to gain interpretability and transparency for both types of data (text and image) in deep learning models, helping researchers understand the contributions of individual features to the model’s output which is pretty much the starting step of explainbale AI.
 
-## Axiomatic Attribution for Deep Networks
-
-This paper is an extension to the previous paper for given for the reserach work which marks a starting for the core concept of *Explainable AI* by introducing key concepts such as *Integrated Gradients* and *Axiomatic Attribution*. While the previous work focused on computing gradients and going back and examining their impact on the model’s predictions, this paper dives deeper into the principles that should guide attribution methods.
 
 ### Key Axioms:
 
-1. **Sensitivity**:  
-   In previous work, we didn’t explicitly consider the scenario where a feature differs between the input and baseline as we jumped straight into the final output(basically input), but the predictions diverge as a result. According to this axiom, any differing feature should receive a non-zero attribution.  
-   **Example**: For a function like \( f(x) = 1 - \text{ReLU}(1 - x) \), with a baseline of 0 and an input of 3, the gradient may flatten at 1, but the input still changes from the baseline, which should reflect a non-zero attribution.
+1. **Sensitivity**:
+   In the previous work, we didn't explicitly account for the case where a feature differs between the input and baseline, which could affect the model's predictions. According to the **Sensitivity** axiom, any feature that differs between the input and baseline should receive a non-zero attribution.  
+   **Example**:  
+   Consider the function \( f(x) = 1 - \text{ReLU}(1 - x) \), where the baseline is 0 and the input is 3. While the gradient may flatten at 1, the input still changes from the baseline, which should reflect a non-zero attribution.
 
 2. **Implementation Invariance**:  
-   Two networks are considered functionally equivalent if their outputs are the same for all inputs, even if their architectures or implementations differ significantly. Attribution methods should respect this equivalence and provide consistent attributions across different models that produce the same output.
+   Two models are considered functionally equivalent if their outputs are identical for all inputs, even if their architectures or implementations differ. Attribution methods should respect this equivalence and provide consistent attributions across different models that yield the same output. This ensures fairness and uniformity in the attribution process.
 
-3. **Completence**
-   Integrated gradients satisfy an axiom called completeness that the attributions add up to the difference between the output of F at the input x and the baseline x.This axiom ensures that the attributions provided by the method are faithful and accurate in explaining the model's prediction.
+3. **Completeness**:  
+   Integrated Gradients satisfies the **Completeness** axiom, meaning the attributions sum up to the total difference between the model's output at the input \(x\) and the baseline \(x'\). This ensures that the attributions provided by the method faithfully explain the model's prediction, and no information is lost in the process.
 
-4. **Lineraity**
-     They also follow the axioms of linearity where it follows a straightline path from the baseline to input.
-   
-### Architecture/Working:
-The Integrated Gradients method is defined as follows:
+4. **Linearity**:  
+   The method follows the **Linearity** axiom, meaning that the attribution is linear along the straight-line path from the baseline to the input. This property ensures that the contributions from different features are additive and follow a proportional relationship.
+
+---
+
+### Architecture/Working of Integrated Gradients:
+
+The **Integrated Gradients** method is mathematically defined as:
 
 $$
 \text{IntegratedGrads}_i(x) := (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha \times (x - x'))}{\partial x_i} \, d\alpha
 $$
 
 Where:
-- $x_i$ is the original input feature.
-- $x'_i$ is the baseline or reference value for that feature.
-- $F$ is the model function.
-- $\alpha$ scales the input from the baseline to the actual input.
+- \( x_i \) is the original input feature.
+- \( x'_i \) is the baseline or reference value for that feature.
+- \( F \) is the model function.
+- \( \alpha \) scales the input from the baseline to the actual input.
 
+The method uses a **straight-line path** from the baseline to the input. The core idea is to compute the gradient for all interpolated inputs and average them. This average gradient is then scaled from 0 to 1, showing the average contribution of each pixel or feature along the path from baseline to input.
 
-In this method we use a straight line path from the baseline to the input, where the basic idea is calculate the gardient of all interporated inputs and take an average of these gradients which is then scaled from 0 to 1 to show the average contribution of each pixels all the way along from the baseline to the input 
+---
 
-### Explanation of Integrated Gradients Equation Components
+### Explanation of Integrated Gradients Equation Components:
 
-#### 1. Feature Difference Component:
+#### 1. **Feature Difference Component**:
+
 $$
 (x_i - x'_i)
 $$
 
-It basically acts as a scaling factor. This factor ensures that the contributions are calculated relative to how much each feature differs from its baseline showing the impact of specific feature on the output.
+This component acts as a **scaling factor**. It determines how much a particular feature differs from its baseline, thus influencing the contribution of that feature to the model's output.
 
-#### 2. Gradient Integration Component:
+#### 2. **Gradient Integration Component**:
+
 $$
 \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha \times (x - x'))}{\partial x_i} \, d\alpha
 $$
 
-This integral calculates the gradients of the model output \(F\) with respect to the feature \(x_i\) at all points along the straight-line path from the baseline \(x'\) to the input \(x\) as parameterized by \(\alpha\). Here, \(\alpha\) varies from 0 (the baseline) to 1 (the actual input), allowing us to examine how sensitive the output is to changes in each feature across this path. The integral aggregates these gradients to determine the overall contribution of the feature \(x_i\).In Simple terms we can say that we are calculating the gradient of all the interporation states wrt to input and aaverage it ,to estimate the 
-cntribution of all these states form basline to input to achive the input.
+This integral computes the gradients of the model's output \( F \) with respect to the feature \( x_i \) at all points along the straight-line path from the baseline \( x' \) to the input \( x \), as parameterized by \( \alpha \). The variable \( \alpha \) ranges from 0 (baseline) to 1 (input). This allows us to analyze how sensitive the output is to changes in each feature across the path.
+
+In simple terms, we compute the gradient for all interpolation states relative to the input and average them. This gives us an estimate of the contribution of each state along the path from the baseline to the input.
+
+---
+
+### Summary of the Method:
+
+- **Sensitivity** ensures that any change from the baseline to the input is accounted for in the attribution.
+- **Implementation Invariance** guarantees that attribution is consistent across different model architectures with the same output.
+- **Completeness** assures that the total attribution adds up to the difference between the output at the input and the baseline.
+- **Linearity** implies that contributions from features are additive and proportional across the interpolation path.
+
+The Integrated Gradients method provides a transparent and mathematically grounded way to attribute model predictions, making it a valuable tool for interpretable machine learning.
+
+---
+
+By including these clarifications and formatting, the explanations will be clearer to a broader audience. The breakdown of the components will help readers, even those unfamiliar with the method, understand the underlying logic.
 
